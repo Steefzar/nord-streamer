@@ -173,3 +173,21 @@ Qualcomm, Synaptics or Google. **Spotify** is a trademark of Spotify AB; it is
 named here only to describe what this drives. No Spotify code, assets or media
 are included or redistributed — the module drives the official, unmodified
 Spotify app through its normal Connect feature.
+
+## License
+
+[MIT](LICENSE), so the hardware notes and the scripts are free to reuse — that
+is the main reason this is public at all.
+
+Two files in this repo are **not** covered by that MIT grant and keep their own
+terms:
+
+- `spotify-streamer/system/vendor/etc/audio_policy_configuration.xml` — a
+  modified copy of the stock vendor file. It stays under its original terms:
+  Apache-2.0 (The Android Open Source Project), BSD-3-Clause (Qualcomm
+  Innovation Center, Inc.) and the accompanying Linux Foundation notice, all
+  retained verbatim in the file, with the modifications described in a notice
+  at its top per Apache-2.0 section 4(b).
+- `spotify-streamer/META-INF/com/google/android/update-binary` — the standard
+  Magisk module installer stub, boilerplate from the upstream Magisk module
+  template rather than anything written here.
