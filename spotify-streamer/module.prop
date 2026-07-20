@@ -1,6 +1,6 @@
 id=spotify-streamer
 name=Spotify Connect Streamer
-version=v2.9
-versionCode=20
+version=v3.0
+versionCode=21
 author=Stefan
 description=Headless Spotify Connect target: app watchdog, screen-off, ADB over Wi-Fi (port 5555), Wi-Fi keep-alive, doze whitelist.

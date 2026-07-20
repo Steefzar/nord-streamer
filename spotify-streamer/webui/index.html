@@ -181,6 +181,7 @@
     <button onclick="act('screen_on')">Wake screen</button>
     <button onclick="act('screen_off')">Sleep screen</button>
     <button class="danger" onclick="if(confirm('Reboot the streamer? Playback stops for about a minute.'))act('reboot')">Reboot streamer</button>
+    <button class="danger" onclick="if(confirm('Hard reset? The unit powers off completely and magisk-autoboot brings it back in about 90 seconds. Use this when the DAC has not come up.'))act('poweroff')">Hard reset</button>
   </div>
   <p class="feedback" id="actout"></p>
 </section>
@@ -271,7 +272,12 @@ async function refresh() {
 async function act(a) {
   $('actout').textContent = '…';
   try { $('actout').textContent = await (await fetch('cgi-bin/action.sh?do=' + a)).text(); }
-  catch (e) { $('actout').textContent = a === 'reboot' ? 'Rebooting — this page reconnects when the unit is back.' : 'Request failed: ' + e; }
+  catch (e) {
+    const goingDown = { reboot: 'Rebooting', poweroff: 'Powering off' }[a];
+    $('actout').textContent = goingDown
+      ? goingDown + ' — this page reconnects when the unit is back.'
+      : 'Request failed: ' + e;
+  }
 }
 async function logs(src) {
   $('log').textContent = 'Reading…';
