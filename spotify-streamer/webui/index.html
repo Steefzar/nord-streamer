@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nord Streamer</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --chassis: #131518;
+    --panel-hi: #24272c;
+    --panel-lo: #1a1d21;
+    --seam: #0b0c0e;
+    --etch: #878e96;
+    --value: #e7e9eb;
+    --vfd: #a8f0dd;
+    --vfd-dim: #2e4a43;
+    --led-ok: #58d47d;
+    --led-warn: #eebb60;
+    --led-err: #e06c5a;
+    --mono: ui-monospace, "Cascadia Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 1.25rem .9rem 3rem;
+    background:
+      radial-gradient(120% 90% at 50% 0%, #1a1d22 0%, var(--chassis) 55%);
+    color: var(--value);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    max-width: 720px; margin-inline: auto;
+  }
+
+  /* ---------- faceplate framing ---------- */
+  .unit {
+    border: 1px solid var(--seam);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--panel-hi), var(--panel-lo));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 8px 24px rgba(0,0,0,.45);
+    padding: 1rem 1.1rem;
+    margin-bottom: .8rem;
+  }
+  .etch {
+    font-size: .66rem; font-weight: 600; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--etch);
+  }
+
+  /* ---------- header ---------- */
+  header.unit {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-block: .8rem;
+  }
+  .wordmark { line-height: 1.25; }
+  .wordmark strong {
+    display: block; font-size: .95rem; font-weight: 700;
+    letter-spacing: .34em; color: #cfd3d7; text-transform: uppercase;
+  }
+  .wordmark span { display: block; margin-top: .15rem; }
+  .led {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--led-ok);
+    box-shadow: 0 0 8px 1px var(--led-ok), inset 0 -1px 1px rgba(0,0,0,.4);
+    animation: breathe 3.2s ease-in-out infinite;
+  }
+  .led.warn { background: var(--led-warn); box-shadow: 0 0 8px 1px var(--led-warn); animation: none; }
+  @keyframes breathe { 50% { opacity: .55; } }
+  @media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+
+  /* ---------- VFD display (signature) ---------- */
+  .vfd {
+    background: #04070a;
+    border-radius: 6px;
+    border: 1px solid #000;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,.9), inset 0 0 40px rgba(80,220,190,.04);
+    padding: 1.05rem 1.2rem .95rem;
+    font-family: var(--mono);
+    min-height: 4.6rem;
+  }
+  .vfd .main {
+    font-size: clamp(1.15rem, 4.5vw, 1.6rem);
+    letter-spacing: .14em;
+    color: var(--vfd);
+    text-shadow: 0 0 9px rgba(130,255,225,.45);
+    transition: color .6s, text-shadow .6s;
+    white-space: nowrap; overflow: hidden;
+  }
+  .vfd .sub {
+    margin-top: .45rem; font-size: .72rem; letter-spacing: .22em;
+    color: var(--vfd-dim); text-transform: uppercase;
+  }
+  .vfd.standby .main { color: var(--vfd-dim); text-shadow: none; }
+  .vfd.alert .main { color: var(--led-warn); text-shadow: 0 0 9px rgba(238,187,96,.4); }
+
+  /* ---------- meters ---------- */
+  .meters { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: .8rem; }
+  @media (max-width: 480px) { .meters { grid-template-columns: 1fr; } }
+  .meter-value {
+    font-family: var(--mono); font-size: 1.05rem; margin-top: .4rem;
+    display: flex; align-items: baseline; gap: .45rem;
+  }
+  .meter-value small { font-size: .68rem; color: var(--etch); letter-spacing: .05em; }
+  .segs { display: flex; gap: 3px; margin-top: .55rem; }
+  .segs i {
+    flex: 1; height: 9px; border-radius: 1.5px;
+    background: #101215; box-shadow: inset 0 1px 1px rgba(0,0,0,.7);
+  }
+  .segs i.lit { background: var(--led-ok); box-shadow: 0 0 5px rgba(88,212,125,.5); }
+  .segs i.lit.warn { background: var(--led-warn); box-shadow: 0 0 5px rgba(238,187,96,.5); }
+
+  /* ---------- controls ---------- */
+  .controls { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .65rem; }
+  button {
+    font: 600 .8rem/1 system-ui, sans-serif; letter-spacing: .03em;
+    color: var(--value);
+    background: linear-gradient(180deg, #2c3036, #212429);
+    border: 1px solid var(--seam);
+    border-radius: 7px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 2px 4px rgba(0,0,0,.35);
+    padding: .68rem 1rem; cursor: pointer;
+  }
+  button:hover { background: linear-gradient(180deg, #33383f, #262a30); }
+  button:active { box-shadow: inset 0 2px 5px rgba(0,0,0,.55); transform: translateY(1px); }
+  button:focus-visible { outline: 2px solid var(--vfd); outline-offset: 2px; }
+  button.danger { color: #f0b5a9; }
+  .feedback {
+    font-family: var(--mono); font-size: .75rem; color: var(--led-warn);
+    margin: .6rem 0 0; min-height: 1em;
+  }
+
+  /* ---------- diagnostics ---------- */
+  pre {
+    background: #05070a; border: 1px solid #000; border-radius: 6px;
+    box-shadow: inset 0 2px 10px rgba(0,0,0,.85);
+    padding: .8rem; margin: .65rem 0 0;
+    font-family: var(--mono); font-size: .68rem; line-height: 1.45;
+    color: #b9c2c9; max-height: 46vh; overflow: auto; white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+
+<header class="unit">
+  <div class="wordmark">
+    <strong>Nord Streamer</strong>
+    <span class="etch">Spotify Connect &middot; USB DAC &middot; Lossless</span>
+  </div>
+  <div class="led" id="powerled" title="unit status"></div>
+</header>
+
+<section class="unit">
+  <div class="etch">Output</div>
+  <div class="vfd standby" id="vfd" style="margin-top:.55rem">
+    <div class="main" id="vfd-main">STANDBY</div>
+    <div class="sub" id="vfd-sub">waiting for status&hellip;</div>
+  </div>
+</section>
+
+<section class="unit meters">
+  <div>
+    <div class="etch">Battery</div>
+    <div class="meter-value"><span id="batt">--</span><small id="chg"></small></div>
+    <div class="segs" id="battsegs"></div>
+  </div>
+  <div>
+    <div class="etch">Cell temp</div>
+    <div class="meter-value"><span id="temp">--</span><small>&deg;C</small></div>
+  </div>
+  <div>
+    <div class="etch">Uptime</div>
+    <div class="meter-value"><span id="uptime">--</span></div>
+  </div>
+</section>
+
+<section class="unit">
+  <div class="etch">Transport</div>
+  <div class="controls">
+    <button onclick="act('playpause')">Play / pause</button>
+    <button onclick="act('restart_spotify')">Restart Spotify</button>
+  </div>
+  <div class="etch" style="margin-top:.9rem">System</div>
+  <div class="controls">
+    <button onclick="act('screen_on')">Wake screen</button>
+    <button onclick="act('screen_off')">Sleep screen</button>
+    <button class="danger" onclick="if(confirm('Reboot the streamer? Playback stops for about a minute.'))act('reboot')">Reboot streamer</button>
+  </div>
+  <p class="feedback" id="actout"></p>
+</section>
+
+<section class="unit">
+  <div class="etch">Remote screen</div>
+  <div class="controls">
+    <button id="mirrorbtn" onclick="toggleMirror()">Open remote screen</button>
+    <span id="mirrorkeys" hidden>
+      <button onclick="ctl('key&code=4')">Back</button>
+      <button onclick="ctl('key&code=3')">Home</button>
+      <button onclick="ctl('swipe_up')">Scroll down</button>
+      <button onclick="ctl('swipe_down')">Scroll up</button>
+    </span>
+  </div>
+  <div id="mirrorwrap" hidden style="margin-top:.65rem; text-align:center">
+    <img id="mirror" alt="device screen"
+         style="max-width:min(100%,320px); border-radius:10px; border:1px solid #000;
+                box-shadow: inset 0 0 0 3px #0b0c0e, 0 4px 14px rgba(0,0,0,.5); cursor:crosshair">
+    <div class="etch" style="margin-top:.4rem">click the screen to tap</div>
+  </div>
+</section>
+
+<section class="unit">
+  <div class="etch">Diagnostics</div>
+  <div class="controls">
+    <button onclick="logs('logcat')">System log</button>
+    <button onclick="logs('dmesg')">Kernel log</button>
+    <button onclick="logs('accd')">Charging log</button>
+  </div>
+  <pre id="log">Pick a log to read it here.</pre>
+</section>
+
+<script>
+const $ = id => document.getElementById(id);
+
+function fmtStream(dac) {
+  // "S24_3LE @ 44100Hz" -> "24 BIT · 44.1 kHz"
+  const bits = (dac.match(/S(\d+)/) || [])[1];
+  const hz = (dac.match(/(\d{4,6})Hz/) || [])[1];
+  if (!bits || !hz) return dac;
+  return bits + ' BIT · ' + (hz / 1000).toFixed(1).replace(/\.0$/, '') + ' kHz';
+}
+
+function render(s) {
+  const led = $('powerled'), vfd = $('vfd');
+  const healthy = !!s.spotify_pid;
+  led.classList.toggle('warn', !healthy);
+  vfd.className = 'vfd';
+  if (!healthy) {
+    vfd.classList.add('alert');
+    $('vfd-main').textContent = 'SPOTIFY DOWN';
+    $('vfd-sub').textContent = 'watchdog relaunches within 2 min';
+  } else if (s.playback === 'PLAYING' && s.dac) {
+    $('vfd-main').textContent = '▶ ' + fmtStream(s.dac);
+    $('vfd-sub').textContent = 'lossless · usb dac';
+  } else {
+    vfd.classList.add('standby');
+    $('vfd-main').textContent = s.playback === 'PLAYING' ? '▶ PLAYING' : 'READY';
+    $('vfd-sub').textContent = 'spotify connect · select this device to play';
+  }
+
+  $('batt').textContent = s.batt_level + '%';
+  $('chg').textContent = s.hold ? 'holding at limit'
+    : ({2:'⚡ charging', 3:'on battery', 4:'not charging', 5:'full'}[s.batt_status] || '');
+  const segs = $('battsegs'); segs.innerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const el = document.createElement('i');
+    if (i < Math.round(s.batt_level / 10)) {
+      el.classList.add('lit');
+      if (s.batt_level < 30 || s.batt_level > 85) el.classList.add('warn');
+    }
+    segs.appendChild(el);
+  }
+  $('temp').textContent = (s.batt_temp / 10).toFixed(1);
+  $('uptime').textContent = Math.floor(s.uptime / 3600) + 'h ' + Math.floor(s.uptime % 3600 / 60) + 'm';
+}
+
+async function refresh() {
+  try { render(await (await fetch('cgi-bin/status.sh')).json()); }
+  catch (e) {
+    $('powerled').classList.add('warn');
+    $('vfd-main').textContent = 'NO LINK';
+    $('vfd-sub').textContent = 'streamer unreachable — rebooting?';
+    $('vfd').className = 'vfd alert';
+  }
+}
+async function act(a) {
+  $('actout').textContent = '…';
+  try { $('actout').textContent = await (await fetch('cgi-bin/action.sh?do=' + a)).text(); }
+  catch (e) { $('actout').textContent = a === 'reboot' ? 'Rebooting — this page reconnects when the unit is back.' : 'Request failed: ' + e; }
+}
+async function logs(src) {
+  $('log').textContent = 'Reading…';
+  try { $('log').textContent = await (await fetch('cgi-bin/logs.sh?src=' + src)).text(); }
+  catch (e) { $('log').textContent = 'Could not read log: ' + e; }
+}
+refresh(); setInterval(refresh, 5000);
+
+/* ---- remote screen ---- */
+let mirrorOn = false, mirrorTimer = null;
+const mimg = $('mirror');
+function frame() {
+  if (!mirrorOn) return;
+  mimg.src = 'cgi-bin/screen.sh?t=' + Date.now();
+}
+mimg.onload = () => { if (mirrorOn) mirrorTimer = setTimeout(frame, 900); };
+mimg.onerror = () => { if (mirrorOn) mirrorTimer = setTimeout(frame, 2500); };
+async function ctl(q) {
+  await fetch('cgi-bin/control.sh?act=' + q).catch(() => {});
+  clearTimeout(mirrorTimer); setTimeout(frame, 350);
+}
+/* Tap vs swipe: track pointer down->up; small movement = tap, else swipe
+   with the real path and duration. Pointer events cover mouse and touch. */
+mimg.style.touchAction = 'none';
+mimg.draggable = false;
+let pDown = null;
+function devCoords(e) {
+  const r = mimg.getBoundingClientRect();
+  return [Math.round((e.clientX - r.left) / r.width * mimg.naturalWidth),
+          Math.round((e.clientY - r.top) / r.height * mimg.naturalHeight)];
+}
+mimg.addEventListener('pointerdown', e => {
+  if (!mimg.naturalWidth) return;
+  e.preventDefault();
+  mimg.setPointerCapture(e.pointerId);
+  pDown = { xy: devCoords(e), t: e.timeStamp };
+});
+mimg.addEventListener('pointerup', e => {
+  if (!pDown || !mimg.naturalWidth) return;
+  const [x1, y1] = pDown.xy, [x2, y2] = devCoords(e);
+  const dur = Math.round(e.timeStamp - pDown.t);
+  pDown = null;
+  if (Math.hypot(x2 - x1, y2 - y1) < 20) ctl('tap&x=' + x1 + '&y=' + y1);
+  else ctl('swipe&x1=' + x1 + '&y1=' + y1 + '&x2=' + x2 + '&y2=' + y2 + '&dur=' + dur);
+});
+mimg.addEventListener('pointercancel', () => { pDown = null; });
+async function toggleMirror() {
+  mirrorOn = !mirrorOn;
+  $('mirrorwrap').hidden = $('mirrorkeys').hidden = !mirrorOn;
+  $('mirrorbtn').textContent = mirrorOn ? 'Close remote screen' : 'Open remote screen';
+  if (mirrorOn) { await ctl('key&code=224'); frame(); }   // wake screen
+  else { clearTimeout(mirrorTimer); ctl('key&code=223'); } // back to sleep
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Synaptics Hi-Res Audio USB DAC (0572:1b09)
+# The DAC's HID interface sends a spurious PLAYPAUSE on connect and could
+# adjust Android's digital volume; map all its keys to nothing.
+key 114 UNKNOWN
+key 115 UNKNOWN
+key 164 UNKNOWN

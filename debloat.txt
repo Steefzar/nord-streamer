@@ -1,0 +1,45 @@
+# Packages disabled on the Nord streamer (pm disable-user --user 0)
+# Revert any single one with:  adb shell pm enable --user 0 <package>
+# Revert all:                  ./debloat.sh enable
+com.android.calculator2
+com.android.deskclock
+com.android.contacts
+com.android.dialer
+com.android.messaging
+com.android.gallery3d
+com.android.apps.tag
+com.android.egg
+com.android.dreams.basic
+com.android.dreams.phototable
+com.android.bips
+com.android.printservice.recommendation
+com.android.wallpaper.livepicker
+com.android.backgrounds
+com.android.DeviceAsWebcam
+com.android.devicediagnostics
+com.android.bluetoothmidiservice
+com.android.hotwordenrollment.okgoogle
+com.android.hotwordenrollment.xgoogle
+com.android.axion.axthemestore
+com.android.axion.themepicker
+com.android.axion.wallpapereffects
+com.android.axion.widgets
+com.android.axion.quicklook
+com.oneplus.camera
+com.oneplus.camera.service
+com.chiller3.bcr
+com.dolby.daxappui
+com.dolby.daxservice
+com.qualcomm.wfd.service
+co.aospa.sense
+com.stevesoltys.seedvault
+org.calyxos.backup.contacts
+org.lineageos.glimpse
+org.lineageos.etar
+org.lineageos.jelly
+org.lineageos.recorder
+org.lineageos.twelve
+org.lineageos.camelot
+org.omnirom.omnijaws
+org.protonaosp.columbus
+io.chaldeaprjkt.gamespace
