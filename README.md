@@ -2,8 +2,25 @@
 
 Turns a rooted OnePlus Nord (AC2003, Android 16, Magisk, no GAPPS) into a headless
 **Spotify Connect streamer** feeding a USB DAC with bit-matched lossless audio
-(24-bit/44.1 kHz). The phone lies screen-off next to the amp; everything is
-automated and self-healing.
+(24-bit/44.1 kHz). The phone lies screen-off next to the amp.
+
+> **This is a janky personal project, not a product.** It is built for exactly
+> one phone, one DAC and one flat where it sits on a shelf next to the amp.
+> Expect hardcoded assumptions, sharp edges and things that only work because
+> of a quirk of this particular kernel. It pokes vendor sysfs nodes, ships an
+> overlay of a vendor audio config, and one companion module reflashes the boot
+> partition. Nothing here is tested beyond my own device.
+>
+> The web UI has **no authentication whatsoever** — it can reboot the phone,
+> power it off, and tap anywhere on its screen. LAN only. Do not port-forward it.
+>
+> It also does not fully work: whether the DAC enumerates after a boot is a race
+> that is lost maybe a third of the time, and the fix is to physically replug
+> the charger. See the hardware notes for why. If you want a reliable Spotify
+> Connect endpoint, buy one.
+
+Published in case the hardware notes below save someone else the two days of
+poking at `oplus_chg` sysfs that they cost me.
 
 ## What the Magisk module does (`spotify-streamer/`)
 
