@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- NOTICE OF MODIFICATION
+     This file is a MODIFIED copy of the stock OnePlus Nord (AC2003)
+     /vendor/etc/audio_policy_configuration.xml, redistributed here as part of
+     the nord-streamer Magisk module (https://github.com/Steefzar/nord-streamer).
+
+     Changes from the stock file, by Stefan (Steefzar), 2026:
+       - mixPort "deep_buffer" pinned to a single profile,
+         AUDIO_FORMAT_PCM_24_BIT_PACKED at 44100 Hz stereo, so that Spotify
+         lossless reaches the USB DAC without being resampled.
+       - mixPort "primary output" narrowed to
+         AUDIO_FORMAT_PCM_24_BIT_PACKED at 48000 Hz stereo.
+
+     All original copyright notices and licence terms below are retained
+     unchanged. This notice is provided per Apache License 2.0 section 4(b).
+-->
 <!-- Copyright (c) 2016-2021, The Linux Foundation. All rights reserved
      Not a Contribution.
 -->

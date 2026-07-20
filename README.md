@@ -137,3 +137,39 @@ Hard-won findings — likely apply to other OnePlus 8-era devices:
   port**, so the charger plugs into the dongle rather than the phone — which is
   what puts the phone in UFP/device mode and makes the host-mode step necessary
 - Static IP via router DHCP reservation (mind Android's per-network random MAC)
+
+## Credits
+
+Almost nothing here is original work — it is glue around other people's:
+
+- **[Magisk](https://github.com/topjohnwu/Magisk)** by topjohnwu — the whole
+  thing is a Magisk module, and the web UI's HTTP server is the `busybox`
+  ([BusyBox](https://busybox.net/), GPL-2.0) that Magisk ships.
+- **[magisk-autoboot](https://github.com/Magisk-Modules-Alt-Repo/magisk-autoboot)**
+  by **anasfanani** — the companion module that powers the phone back on when
+  the charger is connected, which is what makes the web UI's Hard reset button
+  safe to press. Distributed via the
+  [Magisk Modules Alt Repo](https://github.com/Magisk-Modules-Alt-Repo) /
+  [MMRL](https://mmrl.dev/).
+- **[scrcpy](https://github.com/Genymobile/scrcpy)** by Genymobile — how you
+  actually look at the screen of a phone that lives face-down on a shelf.
+- **[Aurora Store](https://gitlab.com/AuroraOSS/AuroraStore)** — keeps Spotify
+  updated unattended without GAPPS.
+- **[Advanced Charging Controller (ACC)](https://github.com/VR-25/acc)** by
+  VR-25 — does not work on this kernel (see the hardware notes), but its
+  documentation of charging-switch behaviour is what pointed at reading the
+  fuel gauge instead of trusting the battery status enum.
+- `spotify-streamer/system/vendor/etc/audio_policy_configuration.xml` is a
+  **modified** copy of the stock vendor file, redistributed under its original
+  terms with all notices retained: **The Android Open Source Project**
+  (Apache-2.0), **Qualcomm Innovation Center, Inc.** (BSD-3-Clause) and
+  **The Linux Foundation**. The modifications are described in a notice at the
+  top of that file, per Apache-2.0 section 4(b).
+- The keylayout overlay targets a **Synaptics** (formerly Conexant, hence USB
+  vendor ID `0572`) Hi-Res Audio USB DAC.
+
+Not affiliated with, endorsed by, or sponsored by Spotify AB, OnePlus,
+Qualcomm, Synaptics or Google. **Spotify** is a trademark of Spotify AB; it is
+named here only to describe what this drives. No Spotify code, assets or media
+are included or redistributed — the module drives the official, unmodified
+Spotify app through its normal Connect feature.
